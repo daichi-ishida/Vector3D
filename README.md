@@ -9,6 +9,9 @@ If you don't plan to use it, comment out `#define _USE_FMT` in line 3 of the **v
 
 Important to note that the precision of floating point is **float** by default. If you want to replace it to **double**, replace the number of `#define _FLOATINGPOINT_PRECISION` in line 6 of the **vector3d.h**
 
+
+You can see how to use it in **main.cpp**
+
 # Author
 * Daichi Ishida
 
