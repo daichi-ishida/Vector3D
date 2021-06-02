@@ -1,15 +1,15 @@
 #pragma once
 
+#define _USE_FMT
+
 // use which fp-precision? 1=float, 2=double
-#ifndef FLOATINGPOINT_PRECISION
-#   define FLOATINGPOINT_PRECISION 1
-#endif
+#define _FLOATINGPOINT_PRECISION 1
 
 // VECTOR_EPSILON is the minimal vector length
 // In order to be able to discriminate floating point values near zero, and
 // to be sure not to fail a comparison because of roundoff errors, use this
 // value as a threshold.
-#if FLOATINGPOINT_PRECISION==1
+#if _FLOATINGPOINT_PRECISION==1
     typedef float Real;
 #   define VECTOR_EPSILON (1e-6f)
 #else
@@ -17,8 +17,6 @@
 #   define VECTOR_EPSILON (1e-10)
 #endif
 
-
-#include <fmt/format.h>
 #include <cmath>
 
 template<class T>
@@ -204,10 +202,10 @@ public:
             return Vector3D<T>( x*fac, y*fac, z*fac );
         }
         else
-            return Vector3D<T>(0);
+            return Vector3D<T>();
     }
 
-    constexpr void normalize() const noexcept
+    constexpr void normalize() noexcept
     {
         T square = normSquare();
 
@@ -233,27 +231,20 @@ public:
         return {a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x};
     }
 
+    /*! Compute a vector parallel to a surface with a normal vector.
+    \param t The vector to be projected
+    \param n The surface normal
+    \return The projected vector
+    */
     friend constexpr Vector3D<T> projectToPlane(const Vector3D<T>& v, const Vector3D<T>& n) noexcept
     {
         return v - dot(v, n) * n;
     }
 
-    friend constexpr T normSquare(const Vector3D<T>& v) noexcept
-    {
-        return v.x * v.x + v.y * v.y + v.z * v.z;
-    }
-
-    friend constexpr T norm(const Vector3D<T>& v) noexcept
-    {
-        T square = v.x * v.x + v.y * v.y + v.z * v.z;
-        if( square <= VECTOR_EPSILON*VECTOR_EPSILON ) return(0.);
-        return ( std::abs ( square-1. ) <  VECTOR_EPSILON*VECTOR_EPSILON ) ? 1. : std::sqrt ( square );
-    }
-
-    /*! Compute a vector reflected at a surface with a distinct normal vector. 
+    /*! Compute a vector reflected at a surface with a normal vector. 
     \param t The incoming vector
     \param n The surface normal
-    \return The new reflected vector
+    \return The reflected vector
     */
     friend constexpr Vector3D<T> reflectVector(const Vector3D<T>& t, const Vector3D<T>& n) noexcept
     {
@@ -311,6 +302,9 @@ typedef Vector3D<Real> Vec3;
 //! 3D vector class of type int
 typedef Vector3D<int> Vec3i;
 
+
+#ifdef _USE_FMT
+#include <fmt/format.h>
 
 template <>
 struct fmt::formatter<Vec3> {
@@ -398,3 +392,4 @@ struct fmt::formatter<Vec3i> {
         v.x, v.y, v.z);
   }
 };
+#endif
